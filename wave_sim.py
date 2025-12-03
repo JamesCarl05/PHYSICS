@@ -121,14 +121,14 @@ class WaveSimulator(tk.Frame):
         mid_y = h // 2
 
         if self.show_grid.get():
-            self.canvas.create_line(0, mid_y, w, mid_y, fill="#444", width=1)
+            self.canvas.create_line(0, mid_y, w, mid_y, fill="#3CCA45", width=1)
             for x in range(0, w, 50):
                 self.canvas.create_line(x, mid_y - 6, x, mid_y + 6, fill="#434040")
                 self.canvas.create_line(x, 0, x, h, fill="#434040")
             for y in range(0, h, 50):
                 self.canvas.create_line(0, y, w, y, fill="#434040")
         else:
-            self.canvas.create_line(0, mid_y, w, mid_y, fill="#444", width=1)
+            self.canvas.create_line(0, mid_y, w, mid_y, fill="#3CCA45", width=1)
 
         for idx, wave in enumerate(self.waves):
             self.canvas.create_text(
