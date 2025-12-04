@@ -144,7 +144,8 @@ class WaveSimulator(tk.Frame):
         cycles_on_screen = 3
         k = 2 * math.pi * cycles_on_screen / max(1, w)
 
-        phase = k * x - 2 * math.pi * freq * t
+        wave_speed = 200  # pixels per second
+        phase = k * (x - wave_speed * t)
 
         wt = wave["wave_type"].get()
         if wt == "sine":
