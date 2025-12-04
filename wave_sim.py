@@ -167,7 +167,7 @@ class WaveSimulator(tk.Frame):
         self.t += dt
 
         self.draw_all_waves()
-        self.after(30, self.animate)
+        self.after(16, self.animate)
 
     def toggle_run(self):
         if not self.running:
