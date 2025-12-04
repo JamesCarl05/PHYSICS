@@ -62,7 +62,7 @@ class WaveSimulator(tk.Frame):
         self.start_btn.pack(side="left")
         ttk.Button(btn_frame, text="Clear Waves", command=self.clear_waves).pack(side="left", padx=6)
         ttk.Button(btn_frame, text="Reset Time", command=self.reset_time).pack(side="left", padx=6)
-        ttk.Button(btn_frame, text="Show/Hide Quiz", command=self.toggle_quiz).pack(side="right")
+        ttk.Button(btn_frame, text="Start/End Quiz", command=self.toggle_quiz).pack(side="right")
 
         self.canvas = tk.Canvas(self, bg="black", height=280)
         self.canvas.pack(fill="both", expand=True, padx=8, pady=(0, 8))
