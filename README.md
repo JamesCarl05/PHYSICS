@@ -21,10 +21,6 @@ The application will launch with:
 - Interactive wave simulation canvas
 - Real-time visualization controls
 
-## 📖 Next Steps
-1. Read [USAGE.md](./USAGE.md) for detailed usage instructions
-2. Check [EXAMPLES/](./EXAMPLES/) for code samples
-3. See [API.md](./API.md) for technical details
 
 ## ⚙️ System Requirements
 - Python 3.x
