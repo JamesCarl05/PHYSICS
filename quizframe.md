@@ -4,88 +4,80 @@
 
 ---
 
-## 📑 Contents
-- [Quick identifiers](#quick-identifiers)
-- [Quick search](#quick-search)
-- [Minimal integration](#minimal-integration-paste-into-main-gui-file)
-- [Real code examples with output](#real-code-examples-with-output)
-- [QuizFrame class structure](#quizframe-class-structure)
-- [Design & integration notes](#design--integration-notes)
-- [Accessibility & UX tips](#accessibility--ux-tips)
-- [Checklist](#checklist)
+## 📑 Quick Navigation
+| Section | Purpose |
+|---------|---------|
+| [🎯 Quick identifiers](#-quick-identifiers) | Find what you need at a glance |
+| [🚀 Minimal integration](#-minimal-integration) | Copy-paste to get started (30 seconds) |
+| [💡 Real code examples](#-real-code-examples-with-output) | See actual output for each scenario |
+| [📦 Class structure](#-quizframe-class-structure) | Understand the internals |
+| [🎨 Design notes](#-design--integration-notes) | Best practices |
+| [♿ Accessibility tips](#-accessibility--ux-tips) | User-friendly design |
+| [✅ Checklist](#-checklist) | Deployment checklist |
 
 ---
 
 ## 🎯 Quick identifiers
 
-| Item | Value |
-|------|-------|
-| **Module** | `quiz_frame.py` |
-| **Class** | `QuizFrame(ttk.Frame)` |
-| **Constructor** | `QuizFrame(master)` |
-| **Key methods** | `start_level()`, `ask_question()`, `select_choice()`, `finish_quiz()`, `update_score_label()` |
-| **Key attributes** | `level_var` (StringVar), `score_label`, `next_btn`, `questions_by_level` |
-| **Difficulty levels** | `"Easy"`, `"Medium"`, `"Hard"` |
+```
+Module:              quiz_frame.py
+Class:               QuizFrame(ttk.Frame)
+Constructor:         QuizFrame(master)
+Difficulty Levels:   Easy  |  Medium  |  Hard
+```
+
+### Core Methods at a Glance
+```
+start_level()         → Begin quiz at current level
+ask_question()        → Display Q + choices
+select_choice()       → Process answer
+finish_quiz()         → Show final score
+update_score_label()  → Refresh score display
+```
+
+### Key Attributes
+```
+level_var        StringVar  → Current difficulty ("Easy", "Medium", "Hard")
+score_label      ttk.Label  → Displays "Score: X/Y"
+next_btn         ttk.Button → "Next Question" button
+current_q        dict       → Current question data
+```
 
 ---
 
-## 🔍 Quick search
+## 🔍 Quick Search Commands
 
-### PowerShell
+<details>
+<summary><strong>PowerShell (Windows)</strong></summary>
+
 ```powershell
-# Find QuizFrame class
-Select-String -Path "c:\Users\user\Downloads\PHYSICS-main\**\*" -Pattern "QuizFrame" -SimpleMatch
+# Find QuizFrame references
+Select-String -Path "c:\Users\user\Downloads\PHYSICS-main\**\*" `
+  -Pattern "QuizFrame" -SimpleMatch
 
-# Find quiz_frame module
-Select-String -Path "c:\Users\user\Downloads\PHYSICS-main\**\*" -Pattern "quiz_frame" -SimpleMatch
+# Find quiz_frame.py imports
+Select-String -Path "c:\Users\user\Downloads\PHYSICS-main\**\*" `
+  -Pattern "quiz_frame" -SimpleMatch
 ```
+</details>
 
-### Cross-platform (git bash / WSL / macOS / Linux)
+<details>
+<summary><strong>Git Bash / WSL / macOS / Linux</strong></summary>
+
 ```bash
-# Find QuizFrame class
-grep -R --line-number "QuizFrame" "c:/Users/user/Downloads/PHYSICS-main" || true
+# Find QuizFrame references
+grep -R --line-number "QuizFrame" "c:/Users/user/Downloads/PHYSICS-main"
 
-# Find quiz_frame module
-grep -R --line-number "quiz_frame" "c:/Users/user/Downloads/PHYSICS-main" || true
+# Find quiz_frame.py imports
+grep -R --line-number "quiz_frame" "c:/Users/user/Downloads/PHYSICS-main"
 ```
+</details>
 
 ---
 
-## 🚀 Minimal integration (paste into main GUI file)
+## 🚀 Minimal Integration
 
-> **For the quickest setup**, copy this snippet into your main GUI file.
-
-```python
-# filepath: main.py (or your main GUI file)
-from tkinter import Tk
-from quiz_frame import QuizFrame
-
-root = Tk()
-root.title("Wave Simulation with Physics Quiz")
-
-# ... existing simulation UI setup ...
-
-quiz = QuizFrame(root)
-quiz.pack(fill="x", pady=8)
-
-root.mainloop()
-```
-
-✅ **Result:** QuizFrame appears as a control panel with:
-- Level selector dropdown (`Easy`, `Medium`, `Hard`)
-- "Start Level" button
-- Score display label
-- Question display area
-- Multiple choice buttons
-- "Next Question" button
-
----
-
-## 💡 Real Code Examples with Output
-
-### Example 1: Initialize and Start Easy Level
-
-**What the code does:** Create QuizFrame and start the Easy difficulty level.
+### ⏱️ 30-Second Setup
 
 ```python
 # filepath: main.py
@@ -93,305 +85,475 @@ from tkinter import Tk
 from quiz_frame import QuizFrame
 
 root = Tk()
+root.title("Wave Simulation with Physics Quiz")
+
+# Your existing simulation code...
+
 quiz = QuizFrame(root)
 quiz.pack(fill="x", pady=8)
 
-# Option 1: User clicks "Start Level" button (default is "Easy")
-# quiz.start_level()  # Starts "Easy" because level_var defaults to "Easy"
+root.mainloop()
+```
 
-# Option 2: Explicitly set and start
-quiz.level_var.set("Easy")
+### ✅ You now have:
+- ✓ Level selector dropdown (`Easy`, `Medium`, `Hard`)
+- ✓ "Start Level" button  
+- ✓ Live score display (`Score: 0/0`)
+- ✓ Question display area  
+- ✓ Multiple choice buttons
+- ✓ "Next Question" button
+
+---
+
+## 💡 Real Code Examples with Output
+
+### Example 1️⃣: Start Easy Level
+
+**What happens:**
+1. User clicks "Start Level" button
+2. First question loads
+3. Score resets
+4. Choice buttons appear
+
+```python
+# Initialize and start
+quiz = QuizFrame(root)
+quiz.pack(fill="x", pady=8)
+
+# Default is "Easy" — user clicks "Start Level" button
 quiz.start_level()
 ```
 
-**📊 What happens on screen:**
+### 📺 Screen Output:
 
-| Element | State |
-|---------|-------|
-| Question text box | Shows `"Q1: Which variable controls the height of the wave?"` |
-| Choice buttons | Displays 2 shuffled choices: `"A. Frequency"` and `"B. Amplitude"` |
-| Score label | Shows `"Score: 0/2"` (2 questions in Easy level) |
-| Next button | **Disabled** (grayed out) until answer selected |
+```
+┌──────────────────────────────────────────────────────┐
+│ Quiz Level: [Easy ▼]  [Start Level]  Score: 0/2      │
+├──────────────────────────────────────────────────────┤
+│ Q1: Which variable controls the height of the wave?  │
+├──────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────┐  │
+│ │ A. Frequency                                    │  │
+│ └─────────────────────────────────────────────────┘  │
+│ ┌─────────────────────────────────────────────────┐  │
+│ │ B. Amplitude                                    │  │
+│ └─────────────────────────────────────────────────┘  │
+├──────────────────────────────────────────────────────┤
+│ [Next Question] (disabled)                           │
+└──────────────────────────────────────────────────────┘
+```
 
-**Console / Debug Output:**
-```
-Level: Easy
-Questions loaded: 2
-Total score: 0/2
-```
+| Component | Value |
+|-----------|-------|
+| **Question** | `Q1: Which variable controls the height of the wave?` |
+| **Choices** | 2 shuffled buttons (A. Frequency, B. Amplitude) |
+| **Score** | `Score: 0/2` |
+| **Next button** | 🔴 Disabled (wait for answer) |
 
 ---
 
-### Example 2: User Selects Answer (Correct)
+### Example 2️⃣: User Clicks Correct Answer
 
-**What the code does:** User clicks choice button. If correct, score increments and feedback displays.
+**User clicks:** `B. Amplitude`
 
 ```python
-# filepath: quiz_frame.py - select_choice() method
+# QuizFrame internally calls:
 def select_choice(self, choice):
-    for child in self.choice_frame.winfo_children():
-        child.config(state="disabled")  # Disable all buttons
-
-    clicked = choice[1]  # e.g., "B" (the answer key)
-    correct = self.current_q["correct"]  # e.g., "B"
-
-    if clicked == correct:
-        self.score += 1  # Score increases from 0 to 1
-        messagebox.showinfo("Correct", "Correct!\n\n" + choice[2])
-        # choice[2] is explanation: "Amplitude controls the height of the wave."
-    else:
-        # Show incorrect feedback with correct answer
-        correct_text = next(c[0] for c in self.current_q["choices"] if c[1] == correct)
-        correct_expl = next(c[2] for c in self.current_q["choices"] if c[1] == correct)
-        messagebox.showinfo("Incorrect",
-                            f"Incorrect.\n\nCorrect answer: {correct_text}\n\n{correct_expl}")
-
-    self.q_index += 1  # Move to next question
-    self.update_score_label()  # Update label: "Score: 1/2"
-    self.next_btn.config(state="normal")  # Enable "Next" button
+    # choice = ("Amplitude", "B", "Amplitude controls the height...")
+    
+    if choice[1] == self.current_q["correct"]:  # "B" == "B" ✓
+        self.score += 1  # 0 → 1
+        messagebox.showinfo("Correct", "Correct!\n\nAmplitude controls...")
+    
+    self.update_score_label()  # "Score: 1/2"
+    self.next_btn.config(state="normal")  # Enable Next button
 ```
 
-**📊 Output when user clicks "B. Amplitude" (correct):**
+### 📺 Screen Output:
 
-| UI Element | Before | After |
-|-----------|--------|-------|
-| Score label | `Score: 0/2` | `Score: 1/2` |
-| Choice buttons | Clickable | Disabled (grayed out) |
-| Next button | Disabled | **Enabled** (clickable) |
-| Messagebox | — | Pops up: `"Correct!\nAmplitude controls the height of the wave."` |
+**Before click:**
+```
+Score: 0/2  |  Choice buttons: 🟢 Clickable  |  Next button: 🔴 Disabled
+```
 
-**User action:** Click "OK" on messagebox, then click "Next Question" button.
+**After click:**
+```
+Score: 1/2  |  Choice buttons: 🔴 Disabled   |  Next button: 🟢 Enabled
+```
+
+**Messagebox:**
+```
+┌─────────────────────────────────┐
+│  Correct                        │
+├─────────────────────────────────┤
+│  Correct!                       │
+│                                 │
+│  Amplitude controls the height  │
+│  of the wave.                   │
+├─────────────────────────────────┤
+│              [ OK ]             │
+└─────────────────────────────────┘
+```
+
+| State | Before | After |
+|-------|--------|-------|
+| **Score label** | `0/2` | `1/2` ✓ |
+| **Choice buttons** | Clickable | Disabled |
+| **Next button** | Disabled | **Enabled** ✓ |
 
 ---
 
-### Example 3: User Selects Answer (Incorrect)
+### Example 3️⃣: User Clicks Wrong Answer
 
-**What the code does:** User clicks wrong answer. Score stays same, correct answer shown.
+**User clicks:** `A. Frequency` (incorrect)
 
 ```python
-# filepath: quiz_frame.py - select_choice() method (incorrect branch)
-if clicked == correct:
-    self.score += 1
-else:
-    # User selected "A. Frequency" but correct is "B. Amplitude"
-    correct_text = next(c[0] for c in self.current_q["choices"] if c[1] == correct)
-    # correct_text = "Amplitude"
-    correct_expl = next(c[2] for c in self.current_q["choices"] if c[1] == correct)
-    # correct_expl = "Amplitude controls the height of the wave."
-    messagebox.showinfo("Incorrect",
-                        f"Incorrect.\n\nCorrect answer: {correct_text}\n\n{correct_expl}")
+def select_choice(self, choice):
+    # choice = ("Frequency", "A", "Frequency changes...")
+    
+    if choice[1] == self.current_q["correct"]:  # "A" != "B" ✗
+        # Score DOES NOT increment
+        correct_answer = "Amplitude"
+        correct_explanation = "Amplitude controls the height..."
+        messagebox.showinfo("Incorrect", 
+            f"Incorrect.\n\nCorrect answer: {correct_answer}\n\n{correct_explanation}")
+    
+    self.next_btn.config(state="normal")  # Enable Next button
 ```
 
-**📊 Output when user clicks "A. Frequency" (incorrect):**
+### 📺 Screen Output:
 
-| UI Element | Before | After |
-|-----------|--------|-------|
-| Score label | `Score: 0/2` | `Score: 0/2` (no change) |
-| Choice buttons | Clickable | Disabled |
-| Next button | Disabled | **Enabled** |
-| Messagebox | — | Pops up: `"Incorrect.\nCorrect answer: Amplitude\nAmplitude controls the height of the wave."` |
+**Messagebox:**
+```
+┌─────────────────────────────────────────────┐
+│  Incorrect                                  │
+├─────────────────────────────────────────────┤
+│  Incorrect.                                 │
+│                                             │
+│  Correct answer: Amplitude                  │
+│                                             │
+│  Amplitude controls the height of the wave. │
+├─────────────────────────────────────────────┤
+│                  [ OK ]                     │
+└─────────────────────────────────────────────┘
+```
+
+| State | Before | After |
+|-------|--------|-------|
+| **Score label** | `0/2` | `0/2` (no change) |
+| **Choice buttons** | Clickable | Disabled |
+| **Next button** | Disabled | **Enabled** ✓ |
 
 ---
 
-### Example 4: Complete Quiz & Finish
+### Example 4️⃣: Quiz Complete (Perfect Score)
 
-**What the code does:** User answers all questions. Quiz finishes and shows performance feedback.
+**User finishes with 2/2 answers correct**
 
 ```python
-# filepath: quiz_frame.py - finish_quiz() method
 def finish_quiz(self):
-    msg = f"You finished the level!\nScore: {self.score}/{self.total}"
-    # msg = "You finished the level!\nScore: 2/2"
-
-    if self.score == self.total:
-        msg += "\nExcellent — perfect score!"
-    elif self.score >= self.total * 0.7:
-        msg += "\nGreat job!"
-    elif self.score >= self.total * 0.4:
-        msg += "\nGood effort!"
-    else:
-        msg += "\nTry again!"
-
+    if self.score == self.total:  # 2 == 2 ✓
+        msg = "You finished the level!\nScore: 2/2\nExcellent — perfect score!"
+    
     messagebox.showinfo("Level Complete", msg)
-    # Resets quiz state
     self.score = 0
     self.total = 0
-    self.q_index = 0
     self.update_score_label()
     self.clear_question_area()
-    self.next_btn.config(state="disabled")
 ```
 
-**📊 Output when user finishes with 2/2 score:**
+### 📺 Screen Output:
 
-**Messagebox displays:**
+**Messagebox:**
 ```
-Level Complete
-
-You finished the level!
-Score: 2/2
-
-Excellent — perfect score!
+┌──────────────────────────────────┐
+│  Level Complete                  │
+├──────────────────────────────────┤
+│  You finished the level!         │
+│  Score: 2/2                      │
+│                                  │
+│  ⭐ Excellent — perfect score!   │
+├──────────────────────────────────┤
+│              [ OK ]              │
+└──────────────────────────────────┘
 ```
 
 **After clicking OK:**
+```
+┌──────────────────────────────────┐
+│ Score: 0/0                       │
+│ (Question area cleared)          │
+│ [Next Question] (disabled)       │
+└──────────────────────────────────┘
+```
 
-| UI Element | State |
-|-----------|-------|
-| Score label | Reset to `Score: 0/0` |
-| Question text | Cleared (empty) |
-| Choice buttons | All removed |
-| Next button | Disabled |
+| Performance | Feedback |
+|-------------|----------|
+| **2/2 (100%)** | ⭐ Excellent — perfect score! |
+| **1.4/2 (70%)** | 👍 Great job! |
+| **0.8/2 (40%)** | 👌 Good effort! |
+| **<0.8/2 (<40%)** | Try again! |
 
 ---
 
-### Example 5: Change Level & Clear Quiz
+### Example 5️⃣: Change Difficulty Level
 
-**What the code does:** User changes difficulty level. Previous progress clears automatically.
+**User selects "Hard" from dropdown**
 
 ```python
-# filepath: quiz_frame.py - change_level() method
+# Automatically called when dropdown changes
 def change_level(self, *_):
-    self.score = 0  # Reset score
+    self.score = 0
     self.total = 0
     self.q_index = 0
-    self.update_score_label()  # Label: "Score: 0/0"
-    self.clear_question_area()  # Remove all question/choice widgets
-    self.next_btn.config(state="disabled")  # Disable Next button
+    self.update_score_label()  # "Score: 0/0"
+    self.clear_question_area()  # Remove all widgets
+    self.next_btn.config(state="disabled")
 ```
 
-**User action sequence:**
-1. User selects `"Medium"` from dropdown
-2. `change_level()` executes automatically (callback)
+### 📺 Screen Output:
 
-**📊 Output:**
+**Before change:**
+```
+Level: Easy   |   Score: 1/2   |   Q displayed   |   Choices visible
+```
 
-| Element | After change_level() |
-|---------|----------------------|
-| Score label | `Score: 0/0` |
-| Question text | Cleared |
-| Choice buttons | All removed |
-| Next button | Disabled |
-| Status | Ready for user to click "Start Level" |
+**After change:**
+```
+Level: Hard   |   Score: 0/0   |   Q cleared     |   Choices cleared
+```
 
 ---
 
 ## 📦 QuizFrame Class Structure
 
-### Constructor
+### Initialization
 ```python
-# filepath: quiz_frame.py
-def __init__(self, master):
-    super().__init__(master)
-    self.master = master
-    self.levels = ["Easy", "Medium", "Hard"]
-    self.questions_by_level = self.build_questions()  # Load all Q&A
-    self.level_var = tk.StringVar(value=self.levels[0])  # Default: "Easy"
-    self.current_q = None  # Current question dict
-    self.q_index = 0  # Current question index
-    self.score = 0  # Current score
-    self.total = 0  # Total questions in level
-    self.create_widgets()  # Build UI
+# filepath: quiz_frame.py - __init__ method
+
+QuizFrame(master)
+├── Load all questions from build_questions()
+├── Set default level to "Easy"
+├── Initialize score = 0
+├── Initialize q_index = 0
+└── Build UI widgets
+    ├── Level dropdown
+    ├── Start Level button
+    ├── Score label
+    ├── Question text box
+    ├── Choice buttons frame
+    └── Next Question button
 ```
 
-### Question Data Structure
+### Question Data Format
 ```python
-# filepath: quiz_frame.py - sample from build_questions()
+# Each question dictionary:
 {
-    "Easy": [
-        {
-            "text": "Which variable controls the height of the wave?",
-            "choices": [
-                ("Frequency", "A", "Frequency changes how fast the wave oscillates."),
-                ("Amplitude", "B", "Amplitude controls the height of the wave.")
-            ],
-            "correct": "B"
-        },
-        # ... more questions
+    "text": "Which variable controls the height of the wave?",
+
+    "choices": [
+        ("Frequency", "A", "Frequency changes how fast..."),
+        ("Amplitude", "B", "Amplitude controls the height...")
     ],
-    "Medium": [ ... ],
-    "Hard": [ ... ]
+
+    "correct": "B"  # Answer key
 }
+
+# Structure: (display_text, answer_key, explanation)
 ```
 
-### Main Methods
-
-| Method | Purpose | Called by |
-|--------|---------|-----------|
-| `start_level()` | Load questions, reset score, show first Q | "Start Level" button |
-| `ask_question()` | Display current question and choices | `start_level()`, `next_question()` |
-| `select_choice(choice)` | Process answer, update score, show feedback | Choice buttons |
-| `next_question()` | Move to next Q or finish quiz | "Next Question" button |
-| `finish_quiz()` | Show final score, reset state | `next_question()` when all Q answered |
-| `change_level(...)` | Reset quiz when level changes | Level dropdown |
-| `update_score_label()` | Refresh score display | `select_choice()`, `change_level()` |
-| `clear_question_area()` | Remove Q text and choice buttons | `ask_question()`, `change_level()` |
+### Method Call Flow
+```
+User clicks "Start Level"
+    ↓
+start_level()
+├── Reset: score=0, q_index=0
+├── Load questions for level
+├── Shuffle questions
+└── Call ask_question()
+    ↓
+ask_question()
+├── Display question text
+├── Create choice buttons
+└── Shuffle and display choices
+    ↓
+User clicks choice
+    ↓
+select_choice()
+├── Compare with correct answer
+├── Update score if correct
+├── Show messagebox feedback
+├── Enable "Next" button
+└── If more questions → user clicks "Next"
+    ↓
+next_question()
+├── Call ask_question() again
+    OR
+└── If no more questions → finish_quiz()
+    ↓
+finish_quiz()
+├── Show final score & feedback
+├── Reset all state
+└── Clear question area
+```
 
 ---
 
 ## 🎨 Design & integration notes
 
-### Keep concerns separated
-- ❌ **Don't:** Mix physics simulation logic into `quiz_frame.py`
-- ✅ **Do:** Call `QuizFrame` methods from your main simulation UI
+### ✅ Best Practices
 
-### Minimal API usage
-```python
-# Three essential operations:
-quiz.start_level()                    # Begin quiz at current level
-quiz.level_var.set("Hard")            # Change difficulty
-quiz.update_score_label()             # Refresh score display (automatic in most cases)
+```
+DO:
+✓ Keep quiz logic separate from simulation code
+✓ Call quiz.start_level() from UI events only
+✓ Let messagebox handle all user feedback
+✓ Use level_var to read/set difficulty
+✓ Match fonts with rest of app
+
+DON'T:
+✗ Mix physics calculations into quiz_frame.py
+✗ Modify quiz questions at runtime without rebuilding
+✗ Access internal _question attributes
+✗ Hide the quiz from controls
 ```
 
-### Placement & styling
-| Aspect | Recommendation |
-|--------|-----------------|
-| **Location** | Place near simulation controls (sliders, buttons) for discoverability |
-| **Fonts** | Uses `"Segoe UI", 11` for questions — match this or adjust theme-wide |
-| **Padding** | Question box uses `pady=5`, control buttons use `pady=3` |
-| **Colors** | Inherits from Tkinter ttk theme (no hardcoded colors) |
-| **Height** | Frame height set to `180px` — adjust if content overflows |
+### Common Customizations
+
+**Change font size:**
+```python
+# In quiz_frame.py, find create_widgets() method
+self.q_text = tk.Text(self, height=4, wrap="word",
+                      font=("Segoe UI", 14))  # ← Change 11 to 14
+```
+
+**Adjust padding:**
+```python
+quiz.pack(fill="x", pady=12)  # Default is 8, increase for more space
+```
+
+**Add to existing frame:**
+```python
+# Instead of pack(), use grid() if your layout uses grid
+quiz.grid(row=0, column=0, sticky="ew", pady=8)
+```
+
+### Layout Placement
+```
+┌─ Your Main Window ──────────────────┐
+│                                     │
+│  [ Other simulation controls ]      │
+│                                     │
+│  ┌─ QuizFrame ────────────────────┐ │
+│  │ Quiz Level: [Easy ▼]  [Start]  │ │
+│  │ Score: 0/0                     │ │
+│  │                                │ │
+│  │ Question text display area...  │ │
+│  │                                │ │
+│  │ [ Choice A ] [ Choice B ]      │ │
+│  │                                │ │
+│  │ [ Next Question ]              │ │
+│  └────────────────────────────────┘ │
+│                                     │
+│  [ More simulation controls ]       │
+│                                     │
+└─────────────────────────────────────┘
+```
 
 ---
 
-## ♿ Accessibility & UX tips
+## ♿ Accessibility & UX Tips
 
-| Tip | Benefit | Implementation |
-|-----|---------|-----------------|
-| **Short messagebox text** | Users focus on key info | Feedback is 1–2 lines max |
-| **Clear button labels** | No confusion on next action | "Start Level", "Next Question" |
-| **Keyboard navigation** | Tab through buttons, Enter to select | Tkinter ttk handles this by default |
-| **Shuffle choices** | Prevents answer pattern recognition | `random.shuffle(choices)` in `ask_question()` |
-| **Disable buttons after answer** | Prevents double-submission | `child.config(state="disabled")` in `select_choice()` |
-| **Explanations in feedback** | Users learn from mistakes | Each choice includes `choice[2]` explanation |
+### Keyboard Navigation
+```
+Tab      → Move between buttons
+Enter    → Click focused button
+Shift+Tab → Move backwards
+```
 
----
+### Screen Reader Friendly
+```
+✓ All buttons have clear labels
+✓ Score updates are reflected in text
+✓ Messagebox titles are descriptive
+✓ Questions are plain English (no abbreviations)
+```
 
-## ✅ Checklist
+### Mobile / Touch Friendly
+```
+✓ Button padding allows easy tapping
+✓ Choice buttons are full width
+✓ Font is readable at any size
+```
 
-Before deploying your quiz integration:
-
-- [ ] ✅ Import `from quiz_frame import QuizFrame` works (no path errors)
-- [ ] ✅ `quiz = QuizFrame(root)` instantiates without errors
-- [ ] ✅ `quiz.pack()` displays the frame in your main window
-- [ ] ✅ "Start Level" button loads first question
-- [ ] ✅ Choice buttons work and show feedback
-- [ ] ✅ Score updates correctly after each answer
-- [ ] ✅ "Next Question" button proceeds to next Q
-- [ ] ✅ Level dropdown changes clear previous progress
-- [ ] ✅ Final messagebox shows correct performance message
-- [ ] ✅ Visual styling matches your app theme
-
----
-
-## 📞 Need more help?
-
-I can:
-- 🔧 **Modify `quiz_frame.py`** to add new questions or difficulty levels
-- 📊 **Add score persistence** (save quiz results to file)
-- 🎨 **Customize colors/fonts** to match your simulation UI
-- 🔗 **Connect quiz events** to simulation (e.g., unlock features on perfect score)
+| Feature | Benefit | How |
+|---------|---------|-----|
+| **Shuffled choices** | Prevents pattern memorization | `random.shuffle(choices)` |
+| **Instant feedback** | User knows if answer is right | Messagebox appears immediately |
+| **Disabled buttons** | Prevents double-clicking | Buttons disabled until "Next" |
+| **Clear labels** | No confusion on actions | "Correct!", "Incorrect." |
+| **Explanations** | Learn from mistakes | Each choice has explanation text |
 
 ---
 
-**Last updated:** 2025 | **Status:** Ready for integration | **QuizFrame version:** 1.0
+## ✅ Pre-Deployment Checklist
+
+Run through before going live:
+
+```
+Code Integration:
+☐ Import statement works: from quiz_frame import QuizFrame
+☐ QuizFrame(root) instantiates without errors
+☐ quiz.pack() displays in main window
+☐ No file path errors
+
+Functionality:
+☐ "Start Level" button loads first question
+☐ Choice buttons respond to clicks
+☐ Score updates correctly after each answer
+☐ "Next Question" button advances to next Q
+☐ Level dropdown changes level correctly
+☐ Final messagebox shows correct feedback
+
+Visual:
+☐ Fonts match app theme
+☐ Padding looks consistent
+☐ Colors look acceptable (or themed)
+☐ Text is readable
+☐ No widgets overlap
+
+Bugs:
+☐ No crash when starting level
+☐ No crash when selecting answer
+☐ No crash when changing level
+☐ All messagebox buttons work
+☐ Can complete full quiz without errors
+```
+
+---
+
+## 🎓 Learning Path
+
+**Beginner:** Just integrate the minimal example above  
+**Intermediate:** Customize fonts and layout to match your UI  
+**Advanced:** Add score persistence or connect to simulation events  
+
+---
+
+## 📞 Quick Help
+
+| Need | Solution |
+|------|----------|
+| Add more questions | Edit `build_questions()` in `quiz_frame.py` |
+| Change difficulty | Modify `self.levels` list in `__init__()` |
+| Custom colors | Add `style.configure()` calls after `QuizFrame(root)` |
+| Save scores | Call `quiz.score` and log to file after `finish_quiz()` |
+| Disable level change | Hide the dropdown or disable `OptionMenu` widget |
+
+---
+
+**Last updated:** 2025  
+**Status:** ✅ Ready for production  
+**Version:** 1.0  
+
+---
