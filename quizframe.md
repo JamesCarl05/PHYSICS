@@ -8,6 +8,7 @@
 - Quick identifiers
 - Quick search
 - Minimal integration (copy-paste)
+- Code examples with output explanations
 - Design & integration notes
 - Accessibility & UX tips
 - Checklist
@@ -54,6 +55,63 @@ quiz.pack(fill="x", pady=8)   # adjust to your layout style
 # quiz.start_level()
 
 root.mainloop()
+```
+
+---
+
+## Code Examples with Output Explanations
+
+### Example 1: Starting a Quiz at a Specific Level
+```python
+# Code: Initialize and start quiz at "Medium" difficulty
+quiz = QuizFrame(root)
+quiz.pack(fill="x", pady=8)
+
+quiz.level_var.set("Medium")  # Set difficulty
+quiz.start_level()             # Begin the quiz
+
+# Output/Result:
+# - The quiz frame displays the first question for "Medium" level
+# - Score label resets to 0
+# - Question text and multiple-choice buttons appear on screen
+# - "Next" button is enabled for user interaction
+```
+
+### Example 2: Responding to User Answer Selection
+```python
+# Code: User selects an answer choice
+quiz = QuizFrame(root)
+quiz.pack(fill="x", pady=8)
+quiz.start_level()
+
+# Simulate user clicking choice button (index 0 = first option)
+quiz.select_choice(0)
+
+# Output/Result:
+# - If correct: score increments, feedback messagebox shows "Correct!"
+# - If incorrect: feedback messagebox shows "Incorrect. Correct answer: [answer]"
+# - Score label updates immediately (e.g., "Score: 1/5")
+# - Next button becomes active to proceed
+```
+
+### Example 3: Monitoring Score Changes Programmatically
+```python
+# Code: Check and update score in real-time
+quiz = QuizFrame(root)
+quiz.pack(fill="x", pady=8)
+quiz.start_level()
+
+# After user completes a question:
+current_score = quiz.score_label.cget("text")  # Retrieve current display
+print(f"Current: {current_score}")  # e.g., "Score: 2/5"
+
+# Manually refresh score display (useful after external updates)
+quiz.update_score_label()
+
+# Output/Result:
+# - Terminal/console prints: "Current: Score: 2/5"
+# - Score label on UI updates to reflect latest count
+# - Enables integration with simulation logging or data tracking
 ```
 
 ---
