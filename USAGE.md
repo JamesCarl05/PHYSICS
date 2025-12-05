@@ -1,35 +1,55 @@
-# WaveLab Documentation
+# How to Use WaveLab
 
-Welcome to **WaveLab** - A Simulation-Based Learning Tool for Sound Waves!
+## Running the Application
 
-## 📚 What is WaveLab?
-WaveLab is an interactive physics simulation tool built with Python and Tkinter that helps you understand sound waves through visual simulation and real-time interaction.
-
-## 📁 Documentation Structure
-- **README.md** (this file) - Project overview
-- **USAGE.md** - How to use the application
-- **API.md** - Code reference and functions
-- **EXAMPLES/** - Ready-to-run example scripts
-
-## 🚀 Quick Start
+### Basic Launch
 ```bash
 python main.py
 ```
 
-The application will launch with:
-- Animated neon cyberpunk UI
-- Interactive wave simulation canvas
-- Real-time visualization controls
+This will:
+1. Open a centered window (900x650)
+2. Display the animated "WAVELAB" neon banner
+3. Initialize the wave simulator
+4. Start the interactive simulation
 
-## 📖 Next Steps
-1. Read [USAGE.md](./USAGE.md) for detailed usage instructions
-2. Check [EXAMPLES/](./EXAMPLES/) for code samples
-3. See [API.md](./API.md) for technical details
+## Interface Overview
 
-## ⚙️ System Requirements
-- Python 3.x
-- tkinter (usually included with Python)
-- wave_sim.py module
+### Title Banner
+- **Animated Neon Text**: "WAVELAB" cycles through magenta → cyan → violet
+- **Auto-resizing**: Banner adapts to window size
+- **Glow Effect**: Updates every 320ms for cyberpunk aesthetic
+
+### Simulation Canvas
+- Main area for wave visualization
+- Updates in real-time as window resizes
+- Displays all active wave propagations
+
+## Customizing the Application
+
+### Change Window Size
+Edit `main.py` (lines 13-14):
+```python
+window_width = 900   # Change to desired width
+window_height = 650  # Change to desired height
+```
+
+### Change Neon Colors
+Edit `main.py` (lines 31-33):
+```python
+neon1 = "#ff00ff"  # Magenta
+neon2 = "#00e5ff"  # Cyan
+neon3 = "#8f00ff"  # Violet
+```
+
+### Adjust Glow Speed
+Edit `main.py` (line 60):
+```python
+root.after(320, glow)  # Change 320 to milliseconds desired
+```
+
+## Keyboard & Mouse Controls
+Check `wave_sim.py` for interactive controls documentation.
 
 ---
-**Created for Physics Education & Simulation Learning**
+*For code examples, see [EXAMPLES/](./EXAMPLES/)*
