@@ -138,27 +138,37 @@ class WaveSimulator(tk.Frame):
             )
 
     def generate_wave_y(self, x, t, wave):
-        w = self.canvas.winfo_width() or self.canvas.winfo_reqwidth()
-        freq = wave["freq"].get()
-        amp = wave["amp"].get()
-        cycles_on_screen = 3
-        k = 2 * math.pi * cycles_on_screen / max(1, w)
-
-        wave_speed = 200  # pixels per second
-        phase = k * (x - wave_speed * t)
-
-        wt = wave["wave_type"].get()
-        if wt == "sine":
-            val = math.sin(phase)
-        elif wt == "square":
-            val = 1.0 if math.sin(phase) >= 0 else -1.0
-        elif wt == "saw":
-            p = (phase / (2 * math.pi)) % 1.0
-            val = 2 * (p - 0.5)
-        else:
-            val = math.sin(phase)
-
-        return (self.canvas.winfo_height() // 2) - amp * val
+       w = self.canvas.winfo_width() or self.canvas.winfo_reqwidth()
+       freq = wave["freq"].get()  # Now actually use this
+       amp = wave["amp"].get()
+       
+       # Define wave speed 
+       base_speed = 200  # Base speed for freq=1
+       wave_speed = base_speed * freq  # Higher freq = faster wave, but same density
+       
+       # Calculate wave number k based on frequency and desired cycles on screen
+       # For a traveling wave, k = 2*pi*freq / wave_speed (to match Hz)
+       # But to keep ~3 cycles on screen, adjust proportionally
+       cycles_on_screen = 3  # Keep this or make it dynamic
+       k = 2 * math.pi * freq / wave_speed  # This ties freq to the phase
+       
+       # Phase for a right-moving wave
+       phase = k * (x - wave_speed * t)
+       
+       # Rest of the wave type logic remains the same
+       wt = wave["wave_type"].get()
+       if wt == "sine":
+           val = math.sin(phase)
+       elif wt == "square":
+           val = 1.0 if math.sin(phase) >= 0 else -1.0
+       elif wt == "saw":
+           p = (phase / (2 * math.pi)) % 1.0
+           val = 2 * (p - 0.5)
+       else:
+           val = math.sin(phase)
+       
+       return (self.canvas.winfo_height() // 2) - amp * val
+   
 
     def animate(self):
         if not self.running:
