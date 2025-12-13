@@ -109,9 +109,9 @@ def main():
     # MAIN SIMULATION FRAME
     # -------------------------------------------
     # CYBERPUNK NEON TITLE BANNER (AUTO-CENTER)
-    title_canvas = tk.Canvas(main_frame, height=100, bg="#0a0a0f",  # Increased height for better visibility
+    title_canvas = tk.Canvas(main_frame, height=100, bg="#0a0a0f",  # Minimum height, but can expand
                              highlightthickness=0, bd=0)
-    title_canvas.pack(fill="x")
+    title_canvas.pack(fill="x", expand=False)  # Allow horizontal expansion, but fixed vertical for now
 
     # Graphic elements
     round_left = title_canvas.create_oval(0, 0, 0, 0, fill="#11111a", outline="")
@@ -127,16 +127,16 @@ def main():
     )
 
     def resize_banner(event=None):
-        w = root.winfo_width()
+        w = title_canvas.winfo_width()
         h = title_canvas.winfo_height()
+        if w > 1 and h > 1:
+            # Resize shapes
+            title_canvas.coords(round_left, 10, 10, 90, h - 10)
+            title_canvas.coords(round_right, w - 90, 10, w - 10, h - 10)
+            title_canvas.coords(rect_mid, 50, 10, w - 50, h - 10)
 
-        # Resize shapes
-        title_canvas.coords(round_left, 10, 10, 90, h - 10)
-        title_canvas.coords(round_right, w - 90, 10, w - 10, h - 10)
-        title_canvas.coords(rect_mid, 50, 10, w - 50, h - 10)
-
-        # Center the title vertically in the canvas
-        title_canvas.coords(title, w // 2, h // 2)
+            # Position title at fixed y (50) to avoid cutoff, center horizontally
+            title_canvas.coords(title, w // 2, 50)
 
     # Neon glow cycle for main title
     def glow():
@@ -160,12 +160,14 @@ def main():
         # Removed draw_all_waves from here to prevent initial lag; assume WaveSimulator handles its own animation
         glow()  # Start glow for main title
 
-    def on_resize(event):
+    def on_resize(event=None):
         resize_banner()
-        sim.draw_static_elements()
+        sim.draw_static_elements()  # Force full redraw of grids/axes
         # Removed draw_all_waves from resize to reduce lag; if WaveSimulator needs it, add back with throttling
 
+    # Bind resize to main_frame and root for maximize handling
     main_frame.bind("<Configure>", on_resize)
+    root.bind("<Configure>", on_resize)  # Extra bind for window maximize/resize
 
     root.mainloop()
 

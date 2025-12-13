@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import math
 import random
+import time
 
 from quiz_frame import QuizFrame
 from utils import sleep
-
 
 class WaveSimulator(tk.Frame):
     def __init__(self, master):
@@ -49,10 +49,10 @@ class WaveSimulator(tk.Frame):
         ttk.Checkbutton(control_frame, text="Show grid/axes",
                         variable=self.show_grid, command=self.draw_static_elements).grid(row=0, column=1, padx=4)
 
-        ttk.Label(control_frame, text="Speed:").grid(row=1, column=2)
-        ttk.Scale(control_frame, from_=0.2, to=4.0, variable=self.speed,
-                  orient="horizontal").grid(row=1, column=3, sticky="ew", padx=(4, 10))
-        ttk.Label(control_frame, textvariable=self.speed).grid(row=1, column=4)
+        ttk.Label(control_frame, text="Speed (type any positive value):").grid(row=1, column=2)
+        self.speed_entry = ttk.Entry(control_frame, textvariable=self.speed)
+        self.speed_entry.grid(row=1, column=3, sticky="ew", padx=(4, 10))
+        self.speed_entry.bind("<Return>", lambda e: self.validate_speed())
 
         control_frame.columnconfigure(3, weight=1)
 
@@ -76,37 +76,72 @@ class WaveSimulator(tk.Frame):
         self.quiz_frame.pack(fill="x", padx=8, pady=8)
         self.quiz_frame.pack_forget()
 
+    def validate_speed(self):
+        try:
+            val = float(self.speed.get())
+            if val <= 0:
+                raise ValueError
+            if val > 100:
+                val = 100
+                self.speed.set(val)
+                messagebox.showinfo("Capped Speed", "Speed capped at 100 for stability.")
+        except ValueError:
+            messagebox.showwarning("Invalid Input", "Speed must be a positive number. Resetting to 1.0.")
+            self.speed.set(1.0)
+
     def add_wave_ui(self):
         win = tk.Toplevel(self)
         win.title("Add Wave")
 
-        ttk.Label(win, text="Frequency:").grid(row=0, column=0)
+        ttk.Label(win, text="Frequency (Hz, any positive value):").grid(row=0, column=0)
         freq_var = tk.DoubleVar(value=2.0)
-        ttk.Scale(win, from_=0.5, to=20, variable=freq_var,
-                  orient="horizontal").grid(row=0, column=1)
-        ttk.Label(win, textvariable=freq_var).grid(row=0, column=2)
+        freq_entry = ttk.Entry(win, textvariable=freq_var)
+        freq_entry.grid(row=0, column=1)
+        freq_entry.bind("<Return>", lambda e: self.validate_freq(freq_var))
 
-        ttk.Label(win, text="Amplitude:").grid(row=1, column=0)
+        ttk.Label(win, text="Amplitude (pixels, any positive value):").grid(row=1, column=0)
         amp_var = tk.DoubleVar(value=60.0)
-        ttk.Scale(win, from_=10, to=120, variable=amp_var,
-                  orient="horizontal").grid(row=1, column=1)
-        ttk.Label(win, textvariable=amp_var).grid(row=1, column=2)
+        amp_entry = ttk.Entry(win, textvariable=amp_var)
+        amp_entry.grid(row=1, column=1)
+        amp_entry.bind("<Return>", lambda e: self.validate_amp(amp_var))
 
         ttk.Label(win, text="Wave Type:").grid(row=2, column=0)
         wave_var = tk.StringVar(value="sine")
         ttk.OptionMenu(win, wave_var, "sine", "sine", "square", "saw").grid(row=2, column=1)
 
-        ttk.Label(win, text="Color:").grid(row=3, column=0)
+        ttk.Label(win, text="Color (hex, e.g., #ff0000):").grid(row=3, column=0)
         color_var = tk.StringVar(value="#%06x" % random.randint(0, 0xFFFFFF))
         ttk.Entry(win, textvariable=color_var).grid(row=3, column=1)
 
         def add_and_close():
+            self.validate_freq(freq_var)
+            self.validate_amp(amp_var)
             self.add_wave(freq_var.get(), amp_var.get(), wave_var.get(), color_var.get())
             self.draw_static_elements()
             self.draw_all_waves()
             win.destroy()
 
-        ttk.Button(win, text="Add Wave", command=add_and_close).grid(row=4, column=0, columnspan=3, pady=8)
+        ttk.Button(win, text="Add Wave", command=add_and_close).grid(row=4, column=0, columnspan=2, pady=8)
+
+    def validate_freq(self, var):
+        try:
+            val = float(var.get())
+            if val <= 0:
+                raise ValueError
+            var.set(val)
+        except ValueError:
+            messagebox.showwarning("Invalid Input", "Frequency must be a positive number. Resetting to 2.0.")
+            var.set(2.0)
+
+    def validate_amp(self, var):
+        try:
+            val = float(var.get())
+            if val <= 0:
+                raise ValueError
+            var.set(val)
+        except ValueError:
+            messagebox.showwarning("Invalid Input", "Amplitude must be a positive number. Resetting to 60.0.")
+            var.set(60.0)
 
     def toggle_quiz(self):
         if self.quiz_frame.winfo_ismapped():
@@ -138,43 +173,38 @@ class WaveSimulator(tk.Frame):
             )
 
     def generate_wave_y(self, x, t, wave):
-       w = self.canvas.winfo_width() or self.canvas.winfo_reqwidth()
-       freq = wave["freq"].get()  # Now actually use this
-       amp = wave["amp"].get()
-       
-       # Define wave speed 
-       base_speed = 200  # Base speed for freq=1
-       wave_speed = base_speed * freq  # Higher freq = faster wave, but same density
-       
-       # Calculate wave number k based on frequency and desired cycles on screen
-       # For a traveling wave, k = 2*pi*freq / wave_speed (to match Hz)
-       # But to keep ~3 cycles on screen, adjust proportionally
-       cycles_on_screen = 3  # Keep this or make it dynamic
-       k = 2 * math.pi * freq / wave_speed  # This ties freq to the phase
-       
-       # Phase for a right-moving wave
-       phase = k * (x - wave_speed * t)
-       
-       # Rest of the wave type logic remains the same
-       wt = wave["wave_type"].get()
-       if wt == "sine":
-           val = math.sin(phase)
-       elif wt == "square":
-           val = 1.0 if math.sin(phase) >= 0 else -1.0
-       elif wt == "saw":
-           p = (phase / (2 * math.pi)) % 1.0
-           val = 2 * (p - 0.5)
-       else:
-           val = math.sin(phase)
-       
-       return (self.canvas.winfo_height() // 2) - amp * val
-   
+        w = self.canvas.winfo_width() or self.canvas.winfo_reqwidth()
+        freq = max(wave["freq"].get(), 0.001)
+        amp = wave["amp"].get()
+        
+        base_speed = 200
+        # Higher cap for better movement visibility
+        wave_speed = min(base_speed * (freq / 1.0), 1000)  # Max 1000 px/s
+        
+        wavelength = wave_speed / freq
+        k = 2 * math.pi / wavelength if wavelength > 0 else 0
+        
+        phase = k * (x - wave_speed * t)
+        
+        wt = wave["wave_type"].get()
+        if wt == "sine":
+            val = math.sin(phase)
+        elif wt == "square":
+            val = 1.0 if math.sin(phase) >= 0 else -1.0
+        elif wt == "saw":
+            p = (phase / (2 * math.pi)) % 1.0
+            val = 2 * (p - 0.5)
+        else:
+            val = math.sin(phase)
+        
+        return (self.canvas.winfo_height() // 2) - amp * val
 
     def animate(self):
         if not self.running:
             return
 
-        dt = 0.1 * self.speed.get()
+        # Consistent dt without freq scaling for smooth movement
+        dt = 0.016 * self.speed.get()
         self.t += dt
 
         self.draw_all_waves()
@@ -198,7 +228,8 @@ class WaveSimulator(tk.Frame):
     def draw_all_waves(self):
         self.canvas.delete("wave")
         w = self.canvas.winfo_width() or self.canvas.winfo_reqwidth()
-        step = max(2, w // 400)
+        # Ultra-fine step to capture all oscillations
+        step = 1  # Plot every pixel for maximum detail
 
         for wave in self.waves:
             points = [(x, self.generate_wave_y(x, self.t, wave))
